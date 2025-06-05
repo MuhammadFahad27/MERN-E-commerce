@@ -77,18 +77,28 @@ A full-featured **MERN stack e-commerce web application** with advanced **user a
   - Delete inappropriate or abusive reviews
 
 ---
+📦 MERN-Ecommerce-Platform
+├── 📁 frontend                  
+│   ├── 📁 components            
+│   ├── 📁 pages                 
+│   ├── 📁 redux                 
+│   ├── 📁 hooks                
+│   ├── 📁 assets               
+│   ├── ........               
+│                
 
-## 📁 Project Structure
-├── frontend # React frontend
-│ ├── components
-│ ├── pages
-│ ├── redux
-│ ├── hooks
-│ └── ...
-├── backend # Node.js backend
-│ ├── controllers
-│ ├── routes
-│ ├── models
-│ ├── middleware
-│ └── ...
+├── 📁 backend                  
+│   ├── 📁 controllers          
+│   ├── 📁 routes              
+│   ├── 📁 models                
+│   ├── 📁 middleware         
+│   ├── ........              
+│           
+
+           
+
+
+
+
+
 
