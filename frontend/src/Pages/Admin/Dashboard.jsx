@@ -14,19 +14,17 @@ import { toggleTheme } from '../../Redux Toolkit/Theme/themeSlice';
 import { MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md";
 import { endFetch, fetchOrders, startFetch } from '../../Redux Toolkit/Order/adminOrdersSlice';
 import { endfetchALlCustomers, fetchALlCustomers, StartfetchALlCustomers } from '../../Redux Toolkit/Customers/customerSlice';
+import { endfetchAllProducts, fetchAllProducts, startfetchAllProducts } from '../../Redux Toolkit/Products/productSlice';
+import { endfetchAllCategories, fetchAllCategories, startfetchAllCategories } from '../../Redux Toolkit/Category/categorySlice';
 
 
 const Dashboard = () => {
   const darkMode = useSelector((state) => state.theme.darkMode)
-  const categories = useSelector((state) => state?.category?.categories).length
   const id = useSelector((state)=> state?.user?.user?.id)
-  const customer = useSelector((state)=>state.customer.allCustomers).length ; 
-  const products = useSelector((state)=>state?.product?.products).length ;
-  const orders = useSelector((state) => state.adminOrders?.Orders).length;
   const dispatch = useDispatch() ;
   const navigate = useNavigate() ;
 
-
+  // fetch Orders 
    useEffect(() => {
     const fetchAdminOrders = async () => {
       try {
@@ -45,6 +43,7 @@ const Dashboard = () => {
     fetchAdminOrders();
   }, [dispatch]);
 
+  // fetch Customers 
    useEffect(() => {
     const customers = async () => {
       try { 
@@ -67,6 +66,70 @@ const Dashboard = () => {
     }
     customers()
   }, [])
+
+  // fetch Products 
+   useEffect(() => { 
+  
+      const allProducts = async ()=>{
+  
+          try {
+  
+              dispatch(startfetchAllProducts()) ;
+              const api_response = await axios.get(import.meta.env.VITE_API_URL+'/all-products',{
+              withCredentials:true 
+            })
+  
+            if(api_response.data.success){
+  
+            
+              dispatch(fetchAllProducts(api_response.data.allProducts))
+              return 
+            }
+            
+            
+          } catch (error) {
+            
+            dispatch(endfetchAllProducts())
+            toast.error(error?.response?.data?.message)
+          }
+      }
+     allProducts() ;
+    }, [])
+
+     useEffect(() => {
+    
+      const Categories = async ()=>{
+    
+        try {
+
+          dispatch(startfetchAllCategories()) ;
+          const response = await axios.get(import.meta.env.VITE_API_URL+'/get-categories')
+          const api_response = await response.data ;
+
+          if(api_response.success){
+
+            dispatch(fetchAllCategories(api_response.allCategories)) 
+            return 
+          }
+
+         
+        } catch (error) {
+
+          dispatch(endfetchAllCategories()) ;
+          console.log('Error while fetching Categorie ',error) ;
+          
+        }
+    
+       
+      }
+        Categories()
+     }, [])
+
+  const categories = useSelector((state) => state?.category?.categories).length
+  const customer = useSelector((state)=>state.customer.allCustomers).length ; 
+  const products = useSelector((state)=>state?.product?.products).length ;
+  const orders = useSelector((state) => state.adminOrders?.Orders).length;
+
   
   
   

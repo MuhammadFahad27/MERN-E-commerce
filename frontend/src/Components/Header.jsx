@@ -71,8 +71,8 @@ const Header = () => {
           dispatch(signOut())
           toast.success(user.message) ;
           navigate('/sign-in')
-           window.location.href = '/sign-in';
-          
+          return ;
+         
           
       }
       
@@ -80,7 +80,10 @@ const Header = () => {
       
         toast.success(error?.response?.data?.message) ;
           dispatch(signOut());
-    window.location.href = '/sign-in';
+          navigate('/sign-in')
+
+          return ;
+
 
     }
   }
