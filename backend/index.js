@@ -3,6 +3,15 @@ const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const { HandleError } = require('./Middlewares/error');
+const productRoutes = require('./Routes/product.route');
+const categoryRoutes = require('./Routes/category.route');
+const authRoutes = require('./Routes/auth.route');
+const userRoutes = require('./Routes/user.route');
+const orderRoutes = require('./Routes/order.route');
+const adminRoutes = require('./Routes/admin.route');
+const cartRoutes = require('./Routes/cart.route');
+
 const env = require('dotenv').config({})
 const app = express()
 // app.use(cors({
@@ -23,14 +32,6 @@ mongoose.connect(process.env.MONGO_DB_URL, {
 
 
 
-const { HandleError } = require('./Middlewares/error');
-const productRoutes = require('./Routes/product.route');
-const categoryRoutes = require('./Routes/category.route');
-const authRoutes = require('./Routes/auth.route');
-const userRoutes = require('./Routes/user.route');
-const orderRoutes = require('./Routes/order.route');
-const adminRoutes = require('./Routes/admin.route');
-const cartRoutes = require('./Routes/cart.route');
 
 
 
