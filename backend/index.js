@@ -5,12 +5,16 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const env = require('dotenv').config({})
 const app = express()
+// app.use(cors({
+//     origin:process.env.FRONTEND_URL,
+//     credentials:true
+// }))
 app.use(cors({
-    origin:process.env.FRONTEND_URL,
-    credentials:true
-}))
+  origin: true, // or specific origins
+  credentials: true // THIS IS CRUCIAL FOR JWT
+}));
 
-mmongoose.connect(process.env.MONGO_DB_URL, {
+mongoose.connect(process.env.MONGO_DB_URL, {
     connectTimeoutMS: 30000, // 30 seconds
     socketTimeoutMS: 45000, // 45 seconds
 })
