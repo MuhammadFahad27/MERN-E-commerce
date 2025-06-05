@@ -10,9 +10,13 @@ app.use(cors({
     credentials:true
 }))
 
-mongoose.connect(process.env.MONGO_DB_URL)
+mmongoose.connect(process.env.MONGO_DB_URL, {
+    connectTimeoutMS: 30000, // 30 seconds
+    socketTimeoutMS: 45000, // 45 seconds
+})
 .then(() => console.log("MongoDB Connected!"))
 .catch(err => console.error("MongoDB Connection Error:", err));
+
 
 
 const { HandleError } = require('./Middlewares/error');
