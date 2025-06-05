@@ -6,31 +6,9 @@ const cookieParser = require('cookie-parser');
 const env = require('dotenv').config({})
 const app = express()
 app.use(cors({
-  origin: 'https://mern-e-commerce-2sxf.vercel.app'
-}));
-
-
-const allowedOrigins = [
-  'https://mern-e-commerce-2sxf.vercel.app',
-  'http://localhost:3000'
-];
-
-app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-}));
-
-
-
-
-
-
+    origin:process.env.FRONTEND_URL,
+    credentials:true
+}))
 
 mongoose.connect(process.env.MONGO_DB_URL)
 .then(() => console.log("MongoDB Connected!"))
