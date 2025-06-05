@@ -6,11 +6,36 @@ const cookieParser = require('cookie-parser');
 const env = require('dotenv').config({})
 const app = express()
 
+const express = require('express');
+const cors = require('cors');
+
+
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:3000'
+].filter(Boolean); 
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like Postman or curl) or from allowed list
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
+
+
 
 mongoose.connect(process.env.MONGO_DB_URL)
 .then(() => console.log("MongoDB Connected!"))
 .catch(err => console.error("MongoDB Connection Error:", err));
-app.use(cors({origin:process.env.FRONTEND_URL,credentials:true}))
 
 
 const { HandleError } = require('./Middlewares/error');
