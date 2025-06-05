@@ -5,30 +5,29 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const env = require('dotenv').config({})
 const app = express()
-
-const express = require('express');
-const cors = require('cors');
+app.use(cors({
+  origin: 'https://mern-e-commerce-2sxf.vercel.app'
+}));
 
 
 const allowedOrigins = [
-  process.env.FRONTEND_URL,
+  'https://mern-e-commerce-2sxf.vercel.app',
   'http://localhost:3000'
-].filter(Boolean); 
+];
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like Postman or curl) or from allowed list
-    if (!origin || allowedOrigins.includes(origin)) {
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true,
-};
+  credentials: true
+}));
 
-app.use(cors(corsOptions));
+
+
 
 
 
