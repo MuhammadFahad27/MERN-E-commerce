@@ -1,6 +1,6 @@
 # 🛍️ MERN Stack E-Commerce Platform
 
-A full-featured **MERN stack e-commerce web application** with advanced **user and admin functionalities**, a modern **UI with Tailwind CSS**, secure **JWT-based authentication**, powerful global state management using **Redux Toolkit**, and robust **REST APIs**.
+A full-featured **MERN stack e-commerce web application** with advanced **user and admin functionalities**, a modern **UI with Tailwind CSS**, secure **JWT-based authentication**, powerful global state management using **Redux Toolkit**, and robust **REST APIs** **Supports dark 🌙 and light ☀️ themes**.
 
 ---
 
