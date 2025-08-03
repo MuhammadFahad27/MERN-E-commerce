@@ -962,7 +962,113 @@ import {
 } from "../Redux Toolkit/Category/categorySlice";
 
 const AllProducts = () => {
-  // ... (Keep all existing logic, state, and effects unchanged) ...
+  const theme = {
+    light: {
+      bg: "bg-white",
+      text: "text-black",
+      heading: "text-black",
+      inputBg: "bg-gray-100",
+      border: "border-gray-300",
+      button: "bg-blue-600 hover:bg-blue-900",
+      description: "text-black",
+    },
+    dark: {
+      bg: "bg-[#121212]",
+      text: "text-[#f1f1f1]",
+      heading: "text-[#1E90FF]",
+      inputBg: "bg-[#1e1e1e]",
+      border: "border-[#333]",
+      button: "bg-[#1f2d40] hover:bg-[#24364d]",
+    },
+  };
+
+  const dispatch = useDispatch();
+  const [addingId, setAddingId] = useState(null);
+
+  const [filter, setFilters] = useState({
+    search: "",
+    sort: "",
+    category: [],
+    priceRange: [],
+    rating: [],
+  });
+
+  const categories = useSelector((state) => state.category.categories);
+  const { isAdding } = useSelector((state) => state?.cart);
+  const darkMode = useSelector((state) => state.theme.darkMode);
+  const [products, setProducts] = useState(null);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [is_Cat, setCat] = useState(false);
+  const [isPrice, setPrice] = useState(false);
+  const [israting, setRating] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const currentTheme = darkMode ? theme.dark : theme.light;
+  const navigate = useNavigate();
+  const { addCart } = useAddToCart();
+
+  const handleRoute = (id) => {
+    navigate(`/user/product-details/${id}`);
+  };
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const params = new URLSearchParams();
+
+        if (filter.search) params.append("search", filter.search);
+        if (filter.sort) params.append("sort", filter.sort);
+        if (filter.category.length)
+          filter.category.forEach((cat) => params.append("category", cat));
+        if (filter.priceRange.length)
+          filter.priceRange.forEach((range) =>
+            params.append("priceRange", range)
+          );
+        if (filter.rating.length)
+          filter.rating.forEach((rate) => params.append("rating", rate));
+
+        params.append("page", page);
+
+        const url = `${
+          import.meta.env.VITE_API_URL
+        }/get/products?${params.toString()}`;
+        const res = await axios.get(url, { withCredentials: true });
+
+        if (res.data.success) {
+          setProducts(res.data.products);
+          setTotal(res.data.totalPages);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchProducts();
+  }, [filter, page]);
+
+  useEffect(() => {
+    const Categories = async () => {
+      try {
+        dispatch(startfetchAllCategories());
+        const response = await axios.get(
+          import.meta.env.VITE_API_URL + "/get-categories"
+        );
+        const api_response = await response.data;
+
+        if (api_response.success) {
+          dispatch(fetchAllCategories(api_response.allCategories));
+          return;
+        }
+      } catch (error) {
+        dispatch(endfetchAllCategories());
+        console.log("Error while fetching Categorie ", error);
+      }
+    };
+    Categories();
+  }, []);
+
+  const userId = useSelector((state) => state?.user?.user?.id);
+
 
   return (
     <main className={`${currentTheme.bg} ${currentTheme.text} min-h-screen`}>
