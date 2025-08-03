@@ -43,6 +43,7 @@ const AllProducts = () => {
     rating: [],
   })
   const categories = useSelector((state) => state.category.categories)
+  const {isAdding} = useSelector((state) => state?.cart) ;
   const darkMode = useSelector((state) => state.theme.darkMode) ;
   const [products,setProducts] = useState([]) ;
   const [page,setPage] = useState(1) ;
@@ -362,11 +363,13 @@ useEffect(() => {
         <div className="flex justify-between items-center mt-auto pt-2">
           <span className="font-bold text-sm sm:text-base">{p.price}$</span>
           <button className={`text-white px-3 py-1 sm:px-4 sm:py-2 rounded 
-            cursor-pointer text-xs sm:text-sm shadow-sm ${currentTheme.button}`}
+            cursor-pointer text-xs sm:text-sm shadow-sm ${currentTheme.button}
+            ${isAdding && 'cursor-not-allowed'}`}
             onClick={()=>{
-              console.log('id : ',p?._id)
+              
               addCart(p?._id)
-            }}>
+            }}
+            disabled={isAdding}>
             Add to Cart
           </button>
         </div>

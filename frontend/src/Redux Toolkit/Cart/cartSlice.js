@@ -6,6 +6,7 @@ const initialState = {
     loading : false ,
     totalProducts:0 ,
     totalPrice:0 ,
+    isAdding : false ,
   
     
 }
@@ -38,9 +39,16 @@ export const cartSlice = createSlice({
             state.cart = [],
             state.totalPrice = 0 ;
             state.totalProducts = 0 
-            
-            
-        }
+        },
+        setCartLoading:(state)=>{
+
+            state.isAdding = true ;
+        },
+        endCartLoading:(state)=>{
+
+            state.isAdding = false  ;
+        },
+
       
        
         
@@ -55,7 +63,9 @@ export const {
     startFetchAllItems,
     fetchAllItems,
     endFetchAllItems  ,
-    clearCart
+    clearCart,
+    setCartLoading , 
+    endCartLoading
     
     
 } = cartSlice.actions
