@@ -328,9 +328,24 @@ useEffect(() => {
 </div>
   ) : products.length === 0 ? (
     // Empty state
-    <div className="col-span-full text-center py-12">
-      <p className={`text-xl ${currentTheme.text}`}>No products found</p>
-    </div>
+    // <div className="col-span-full text-center py-12">
+    //   <p className={`text-xl ${currentTheme.text}`}>No products found</p>
+    // </div>
+
+    {/* Loader Spinner Centered */}
+<div className="col-span-full flex items-center justify-center py-12">
+  <div className="relative w-12 h-12">
+    {/* Background spinner ring with opacity */}
+    <div className={`absolute inset-0 rounded-full border-4 ${currentTheme.borderOpacity} border-t-transparent`}></div>
+
+    {/* Foreground animated spinner */}
+    <div className={`absolute inset-0 rounded-full border-4 ${currentTheme.border} border-t-transparent animate-spin`}></div>
+  </div>
+</div>
+
+
+
+
   ) : (
     // Product grid
     products.map((p) => (
