@@ -25,7 +25,7 @@ export const useAllCartItems = ()=>{
                 })
                 if(response.data?.success){
 
-                    dispatch(fetchAllItems(response.data?))
+                    dispatch(fetchAllItems(response.data))
                     
                     return ;
                 }
