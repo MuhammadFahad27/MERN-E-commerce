@@ -94,7 +94,7 @@ const Cart = () => {
                     <div className="flex justify-center items-center h-64">
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900 dark:border-gray-100"></div>
                     </div>
-                ) : cart.length === 0 ? (
+                ) : cart?.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-20">
                         <FiShoppingCart className={`text-6xl mb-4 ${currentTheme.emptyCartText}`} />
                         <h2 className={`text-2xl font-semibold mb-2 ${currentTheme.heading}`}>Your cart is empty</h2>
@@ -109,7 +109,7 @@ const Cart = () => {
                     <div className="flex flex-col lg:flex-row gap-6">
                         {/* Cart Items */}
                         <div className="flex-1 space-y-4">
-                            {cart.map((item) => (
+                            {cart?.map((item) => (
                                 <div key={item?._id} className={`flex flex-col sm:flex-row gap-4 p-4 rounded-lg border ${currentTheme.productCard}`}>
                                     <div className="w-full sm:w-32 h-32 bg-gray-100 dark:bg-gray-800 rounded-md overflow-hidden flex items-center justify-center">
                                         <img 
