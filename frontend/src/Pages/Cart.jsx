@@ -94,7 +94,7 @@ const Cart = () => {
                     <div className="flex justify-center items-center h-64">
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900 dark:border-gray-100"></div>
                     </div>
-                ) : cart?.length === 0 ? (
+                ) : !cart  || cart?.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-20">
                         <FiShoppingCart className={`text-6xl mb-4 ${currentTheme.emptyCartText}`} />
                         <h2 className={`text-2xl font-semibold mb-2 ${currentTheme.heading}`}>Your cart is empty</h2>
