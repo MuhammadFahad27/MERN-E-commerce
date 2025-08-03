@@ -855,7 +855,7 @@ const AllProducts = () => {
               products.map((p) => (
                 <div
                   key={p._id}
-                  className={`p-4 rounded-2xl shadow-md ${currentTheme.inputBg} hover:shadow-lg transition-shadow h-full flex flex-col justify-between ${currentTheme.text} border ${currentTheme.border}`}
+                  className={`p-2 rounded-2xl shadow-md ${currentTheme.inputBg} hover:shadow-lg transition-shadow h-full flex flex-col justify-between ${currentTheme.text} border ${currentTheme.border}`}
                 >
                   <div
                     className={`aspect-square bg-gray-50 mb-3 rounded overflow-hidden`}
@@ -864,7 +864,7 @@ const AllProducts = () => {
                     <img
                       src={p.images[0]}
                       alt={p.name}
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-contain p-2"
                     />
                   </div>
 
