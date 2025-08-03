@@ -56,10 +56,7 @@ const AllProducts = () => {
   const navigate = useNavigate() ;
   const {addCart} = useAddToCart() ;
 
-  useEffect(()=>{
-    
-    console.log("cart wala ",isAdding)
-  },[isAdding])
+  
 
   const handleRoute = (id)=>{
 
@@ -310,16 +307,25 @@ useEffect(() => {
   {/* Loading and Error States */}
   {!products ? (
     // Loading state with spinner
-    <div className="col-span-full flex flex-col items-center justify-center py-12">
-  {/* Circular Loader */}
-  <div className="relative w-12 h-12">
-    <div className={`absolute w-full h-full rounded-full border-4 ${currentTheme.borderOpacity} border-transparent`}></div>
-    <div className={`absolute w-full h-full rounded-full border-4 ${currentTheme.border} border-t-transparent animate-spin`}></div>
-  </div>
+  //   <div className="col-span-full flex flex-col items-center justify-center py-12">
+  // {/* Circular Loader */}
+  // <div className="relative w-12 h-12">
+  //   <div className={`absolute w-full h-full rounded-full border-4 ${currentTheme.borderOpacity} border-transparent`}></div>
+  //   <div className={`absolute w-full h-full rounded-full border-4 ${currentTheme.border} border-t-transparent animate-spin`}></div>
+  // </div>
   
-  {/* Loading Text (optional) */}
-  <p className={`mt-4 text-lg ${currentTheme.text}`}>Loading products...</p>
-    </div>
+  // {/* Loading Text (optional) */}
+  // <p className={`mt-4 text-lg ${currentTheme.text}`}>Loading products...</p>
+  //   </div>
+    <div className="col-span-full flex items-center justify-center py-12">
+  <div className="relative w-12 h-12">
+    {/* Background spinner ring with opacity */}
+    <div className={`absolute inset-0 rounded-full border-4 ${currentTheme.borderOpacity} border-t-transparent`}></div>
+
+    {/* Foreground animated spinner */}
+    <div className={`absolute inset-0 rounded-full border-4 ${currentTheme.border} border-t-transparent animate-spin`}></div>
+  </div>
+</div>
   ) : products.length === 0 ? (
     // Empty state
     <div className="col-span-full text-center py-12">
