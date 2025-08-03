@@ -874,11 +874,11 @@ const AllProducts = () => {
                   >
                     {p?.name}
                   </h2>
-                  {/* <p
+                  <p
                     className={`${currentTheme.bg} text-xs sm:text-sm mb-2 line-clamp-2`}
                   >
                     {p.description || "Product description here..."}
-                  </p> */}
+                  </p>
 
                   <div className="flex mb-2">
                     <StarRatings
