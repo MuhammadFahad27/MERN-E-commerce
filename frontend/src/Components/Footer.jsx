@@ -20,7 +20,7 @@ const Footer = () => {
       divider: 'border-gray-200'
     },
     dark: {
-      bg: 'bg-gray-800',
+      bg: 'bg-zinc-900',
       text: 'text-gray-300',
       heading: 'text-white',
       border: 'border-gray-700',
