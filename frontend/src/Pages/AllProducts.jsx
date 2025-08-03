@@ -381,7 +381,7 @@ const AllProducts = () => {
                 products.map((p) => (
                   <div
                     key={p._id}
-                    className={`p-4 sm:p-2 rounded shadow-md ${currentTheme.inputBg} hover:shadow-lg transition-shadow h-full flex flex-col ${currentTheme.text}
+                    className={`p-4 sm:p-2 rounded shadow-md ${currentTheme.inputBg} hover:shadow-lg transition-shadow h-full flex flex-col ${currentTheme.text} flex-wrap sm:gap-2 xl:gap-4
     cursor-pointer border ${currentTheme.border} w-[60px] sm:w-[200px] lg:w-[250px]`}
                   >
                     {/* Image */}
