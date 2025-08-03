@@ -378,18 +378,11 @@ const AllProducts = () => {
               ) : (
                 //  Actual Products --->>>
 
-
-                <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8">
-
-                  {
-
-
- products.map((p) => (
+                  products.map((p) => (
                   <div
                     key={p._id}
                      className={`rounded shadow-md ${currentTheme.inputBg} hover:shadow-lg transition-shadow 
-      flex flex-col ${currentTheme.text} border ${currentTheme.border}
-      w-[90%] sm:w-[260px] md:w-[280px] lg:w-[300px] xl:w-[320px] p-4`}
+      flex flex-col ${currentTheme.text} border ${currentTheme.border}`}
                   >
                     {/* Image */}
                     <div
@@ -453,12 +446,7 @@ const AllProducts = () => {
                     </div>
                   </div>
                 ))
-
-                  }
-  
-            </div>
-
-
+            
                
               )}
             </div>
