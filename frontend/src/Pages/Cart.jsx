@@ -64,7 +64,7 @@ const Cart = () => {
      useEffect(() => {
         
        console.log("cart items :",cart)
-    }, []);
+    }, [cart]);
 
     
     const deleteProduct = async (id)=>{
