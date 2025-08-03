@@ -34,6 +34,8 @@ const AllProducts = () => {
 
   const dispatch = useDispatch() ;
   const [addingId, setAddingId] = useState(null);
+  
+
 
   const [filter, setFilters] = useState({
 
@@ -46,7 +48,7 @@ const AllProducts = () => {
   const categories = useSelector((state) => state.category.categories)
   const {isAdding} = useSelector((state) => state?.cart) ;
   const darkMode = useSelector((state) => state.theme.darkMode) ;
-  const [products,setProducts] = useState([]) ;
+  const [products,setProducts] = useState(null) ;
   const [page,setPage] = useState(1) ;
   const [total,setTotal] = useState(0) ;
   const [is_Cat, setCat] = useState(false)
