@@ -298,49 +298,54 @@ useEffect(() => {
           <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mt-4 rounded-full"></div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 sm:space-y-7">
-          <div className="space-y-1">
-            <label className={`block text-sm sm:text-base font-semibold mb-2 ${currentTheme.label}`}>
-              Username
-            </label>
-            <input
-              type="text"
-              placeholder={details?.username}
-              {...register("username")}
-              className={`w-full px-4 py-3 sm:py-4 text-sm sm:text-base rounded-xl border-2 ${currentTheme.border} ${currentTheme.inputBg} focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 placeholder-gray-400`}
-              
-            />
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {/* Username and Email Row */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className={`block text-sm font-semibold mb-1 ${currentTheme.label}`}>
+                Username
+              </label>
+              <input
+                type="text"
+                placeholder={details?.username}
+                {...register("username")}
+                className={`w-full px-3 py-2.5 text-sm rounded-lg border-2 ${currentTheme.border} ${currentTheme.inputBg} focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 placeholder-gray-400`}
+                
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className={`block text-sm font-semibold mb-1 ${currentTheme.label}`}>
+                Email Address
+              </label>
+              <input
+                type="email"
+                placeholder={details?.email}
+                {...register("email")}
+                className={`w-full px-3 py-2.5 text-sm rounded-lg border-2 ${currentTheme.border} ${currentTheme.inputBg} focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 placeholder-gray-400`}
+                
+              />
+            </div>
           </div>
 
+          {/* Password Row */}
           <div className="space-y-1">
-            <label className={`block text-sm sm:text-base font-semibold mb-2 ${currentTheme.label}`}>
-              Email Address
-            </label>
-            <input
-              type="email"
-              placeholder={details?.email}
-              {...register("email")}
-              className={`w-full px-4 py-3 sm:py-4 text-sm sm:text-base rounded-xl border-2 ${currentTheme.border} ${currentTheme.inputBg} focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 placeholder-gray-400`}
-              
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className={`block text-sm sm:text-base font-semibold mb-2 ${currentTheme.label}`}>
+            <label className={`block text-sm font-semibold mb-1 ${currentTheme.label}`}>
               New Password
             </label>
             <input
               type="password"
               {...register("password")}
-              className={`w-full px-4 py-3 sm:py-4 text-sm sm:text-base rounded-xl border-2 ${currentTheme.border} ${currentTheme.inputBg} focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 placeholder-gray-400`}
+              className={`w-full px-3 py-2.5 text-sm rounded-lg border-2 ${currentTheme.border} ${currentTheme.inputBg} focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 placeholder-gray-400`}
               placeholder="Enter new password"
             />
           </div>
 
-          <div className="pt-4">
+          {/* Submit Button */}
+          <div className="pt-3">
             <button
               type="submit"
-              className={`w-full py-3 sm:py-4 text-sm sm:text-base rounded-xl font-semibold cursor-pointer ${currentTheme.button}`}
+              className={`w-full py-2.5 text-sm rounded-lg font-semibold cursor-pointer ${currentTheme.button}`}
             >
               Save Changes
             </button>
