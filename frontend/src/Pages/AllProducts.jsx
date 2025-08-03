@@ -382,7 +382,7 @@ const AllProducts = () => {
                   <div
                     key={p._id}
                     className={`p-4 sm:p-2 rounded shadow-md ${currentTheme.inputBg} hover:shadow-lg transition-shadow h-full flex flex-col ${currentTheme.text}
-    cursor-pointer border ${currentTheme.border} w-full sm:w-[70%] lg:w-[80%]`}
+    cursor-pointer border ${currentTheme.border} w-[200px] sm:w-[400px] lg:w-[450px]`}
                   >
                     {/* Image */}
                     <div
