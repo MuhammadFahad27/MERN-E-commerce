@@ -61,6 +61,10 @@ const Cart = () => {
        }
        fetchCart()
     }, []);
+     useEffect(() => {
+        
+       console.log("cart items :",cart)
+    }, []);
 
     
     const deleteProduct = async (id)=>{
