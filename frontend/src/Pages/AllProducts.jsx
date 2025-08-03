@@ -364,7 +364,7 @@ useEffect(() => {
           <span className="font-bold text-sm sm:text-base">{p.price}$</span>
           <button className={`text-white px-3 py-1 sm:px-4 sm:py-2 rounded 
             cursor-pointer text-xs sm:text-sm shadow-sm ${currentTheme.button}
-            ${isAdding && 'cursor-not-allowed'}`}
+            ${isAdding ? 'cursor-not-allowed' : 'cursor-pointer'}`}
             onClick={()=>{
               
               addCart(p?._id)
