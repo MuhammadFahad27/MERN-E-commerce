@@ -329,7 +329,7 @@ useEffect(() => {
        products.map((p) => (
       <div
         key={p._id}
-        className={`p-10 sm:p-7 rounded shadow-md ${currentTheme.inputBg} hover:shadow-lg transition-shadow h-full flex flex-col ${currentTheme.text}
+        className={`p-4 sm:p-2 rounded shadow-md ${currentTheme.inputBg} hover:shadow-lg transition-shadow h-full flex flex-col ${currentTheme.text}
           cursor-pointer border ${currentTheme.border}`
         
         }
