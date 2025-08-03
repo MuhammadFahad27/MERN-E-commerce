@@ -33,6 +33,7 @@ const AllProducts = () => {
   }
 
   const dispatch = useDispatch() ;
+  const [addingId, setAddingId] = useState(null);
 
   const [filter, setFilters] = useState({
 
@@ -327,24 +328,10 @@ useEffect(() => {
   </div>
 </div>
   ) : products.length === 0 ? (
-    // Empty state
-    // <div className="col-span-full text-center py-12">
-    //   <p className={`text-xl ${currentTheme.text}`}>No products found</p>
-    // </div>
-
-    {/* Loader Spinner Centered */}
-<div className="col-span-full flex items-center justify-center py-12">
-  <div className="relative w-12 h-12">
-    {/* Background spinner ring with opacity */}
-    <div className={`absolute inset-0 rounded-full border-4 ${currentTheme.borderOpacity} border-t-transparent`}></div>
-
-    {/* Foreground animated spinner */}
-    <div className={`absolute inset-0 rounded-full border-4 ${currentTheme.border} border-t-transparent animate-spin`}></div>
-  </div>
-</div>
-
-
-
+    
+    <div className="col-span-full text-center py-12">
+      <p className={`text-xl ${currentTheme.text}`}>No products found</p>
+    </div>
 
   ) : (
     // Product grid
@@ -392,11 +379,11 @@ useEffect(() => {
             cursor-pointer text-xs sm:text-sm shadow-sm ${currentTheme.button}
             ${isAdding ? 'cursor-not-allowed' : 'cursor-pointer'}`}
             onClick={()=>{
-              
-              addCart(p?._id)
+               setAddingId(p._id);
+              addCart(p?._id).finally(()=>setAddingId(null))
             }}
             disabled={isAdding}>
-            {isAdding ? 'Adding to cart '  : "Add to cart" }
+            {addingId === p._id ? "Adding to cart..." : "Add to cart"}
           </button>
         </div>
       </div>
