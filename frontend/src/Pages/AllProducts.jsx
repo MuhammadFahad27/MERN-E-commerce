@@ -56,6 +56,11 @@ const AllProducts = () => {
   const navigate = useNavigate() ;
   const {addCart} = useAddToCart() ;
 
+  useEffect(()=>{
+    
+    console.log("cart wala ",isAdding)
+  },[])
+
   const handleRoute = (id)=>{
 
     navigate(`/user/product-details/${id}`)
