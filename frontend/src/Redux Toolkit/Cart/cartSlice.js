@@ -24,7 +24,7 @@ export const cartSlice = createSlice({
         fetchAllItems:(state,action)=>{
 
             state.loading = false ;
-              state.cart = action.payload?.item[0]?.products || [];
+              state.cart = action.payload?.item[0]?.products ;
               state.totalPrice = action.payload?.item[0]?.totalPrice 
               state.totalProducts = action.payload?.item[0]?.totalProducts  ; 
                
