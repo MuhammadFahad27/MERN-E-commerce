@@ -324,9 +324,11 @@ useEffect(() => {
   ) : (
     //  Actual Products --->>> 
 
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
+      {
 
-       products.map((p) => (
+        products.map((p) => (
       <div
         key={p._id}
         className={`p-4 sm:p-2 rounded shadow-md ${currentTheme.inputBg} hover:shadow-lg transition-shadow h-full flex flex-col ${currentTheme.text}
@@ -379,6 +381,14 @@ useEffect(() => {
         </div>
       </div>
     ))
+
+      }
+
+    </div>
+
+
+
+       
     
     
     
