@@ -378,7 +378,13 @@ const AllProducts = () => {
               ) : (
                 //  Actual Products --->>>
 
-                products.map((p) => (
+
+                <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8">
+
+                  {
+
+
+ products.map((p) => (
                   <div
                     key={p._id}
                     className={`p-4 sm:p-2 rounded shadow-md ${currentTheme.inputBg} hover:shadow-lg transition-shadow h-full flex flex-col ${currentTheme.text} flex-wrap sm:gap-2 xl:gap-4
@@ -446,6 +452,13 @@ const AllProducts = () => {
                     </div>
                   </div>
                 ))
+
+                  }
+  
+            </div>
+
+
+               
               )}
             </div>
 
