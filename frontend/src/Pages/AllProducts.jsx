@@ -840,7 +840,7 @@ const AllProducts = () => {
           </div>
 
           {/* Product Grid */}
-          {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {!products ? (
               <div className="col-span-full flex items-center justify-center py-20">
                 <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
@@ -858,7 +858,7 @@ const AllProducts = () => {
                   className={`p-2 rounded-2xl shadow-md ${currentTheme.inputBg} hover:shadow-lg transition-shadow h-full flex flex-col justify-between ${currentTheme.text} border ${currentTheme.border}`}
                 >
                   <div
-                    className={`aspect-square bg-gray-50 mb-3 rounded overflow-hidden`}
+                    className={`w-full h-40 flex items-center justify-center bg-white rounded mb-3 overflow-hidden"`}
                     onClick={() => handleRoute(p?._id)}
                   >
                     <img
@@ -911,37 +911,9 @@ const AllProducts = () => {
                 </div>
               ))
             )}
-          </div> */}
+          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-  {products.map((p) => (
-    <div
-      key={p._id}
-      className={`p-4 rounded shadow-md ${currentTheme.inputBg} hover:shadow-lg transition-shadow flex flex-col ${currentTheme.text} border ${currentTheme.border}`}
-    >
-      {/* Image */}
-      <div className="w-full h-40 flex items-center justify-center bg-white rounded mb-3 overflow-hidden">
-        <img
-          src={p.image}
-          alt={p.name}
-          className="max-h-full max-w-full object-contain"
-        />
-      </div>
-
-      {/* Product Info */}
-      <h3 className="text-base font-semibold line-clamp-2">{p.name}</h3>
-      <p className="text-sm text-gray-500 line-clamp-2">{p.description}</p>
-
-      {/* Price and Button */}
-      <div className="mt-auto flex justify-between items-center pt-3">
-        <span className="font-bold text-md">${p.price}</span>
-        <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm">
-          Add to Cart
-        </button>
-      </div>
-    </div>
-  ))}
-</div>
+ 
 
 
           {/* Pagination */}
