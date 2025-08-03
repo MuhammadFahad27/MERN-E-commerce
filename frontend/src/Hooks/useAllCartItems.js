@@ -12,7 +12,7 @@ export const useAllCartItems = ()=>{
 
         if(!userId){
 
-            toast.error('id is reuired')
+            toast.error('id is required')
             return ;
         }
 
@@ -25,7 +25,7 @@ export const useAllCartItems = ()=>{
                 })
                 if(response.data?.success){
 
-                    dispatch(fetchAllItems(response.data))
+                    dispatch(fetchAllItems(response.data?))
                     
                     return ;
                 }

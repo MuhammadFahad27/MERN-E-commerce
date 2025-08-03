@@ -28,9 +28,6 @@ export const cartSlice = createSlice({
               state.totalPrice = action.payload?.item[0]?.totalPrice 
               state.totalProducts = action.payload?.item[0]?.totalProducts  ; 
                
-
-            
-
         },
         endFetchAllItems:(state,action)=>{
             

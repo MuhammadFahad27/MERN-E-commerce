@@ -171,8 +171,6 @@ const cartItems = catchAsyncErrors (async(req,res,next)=>{
      const { userId } = req.params;
 
     
-
-    
     if(req.user.id !== userId){
 
         
@@ -184,7 +182,7 @@ const cartItems = catchAsyncErrors (async(req,res,next)=>{
 
 
 
-    const item = await Cart.find().populate('products.product') ;
+    const item = await Cart.find({user:userId}).populate('products.product') ;
 
     return res.status(200).json({
 
