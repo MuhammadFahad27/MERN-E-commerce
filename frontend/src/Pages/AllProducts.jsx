@@ -370,7 +370,7 @@ useEffect(() => {
               addCart(p?._id)
             }}
             disabled={isAdding}>
-            Add to Cart
+            {isAdding ? 'Adding to cart '  : "Add to cart" }
           </button>
         </div>
       </div>
