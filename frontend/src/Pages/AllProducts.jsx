@@ -59,7 +59,7 @@ const AllProducts = () => {
   useEffect(()=>{
     
     console.log("cart wala ",isAdding)
-  },[])
+  },[isAdding])
 
   const handleRoute = (id)=>{
 
