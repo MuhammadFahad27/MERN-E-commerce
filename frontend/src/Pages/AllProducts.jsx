@@ -632,7 +632,7 @@ const AllProducts = () => {
         <div
           className={`${
             mobileFiltersOpen ? "block" : "hidden"
-          } lg:block w-full lg:w-64 p-4 space-y-6 border-r ${currentTheme.border}`}
+          } lg:block w-full lg:w-48 p-4 space-y-6 border-r ${currentTheme.border}`}
         >
           {/* Categories */}
           <div>
