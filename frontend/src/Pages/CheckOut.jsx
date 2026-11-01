@@ -33,7 +33,8 @@ const CheckOut = () => {
   const darkMode = useSelector((state) => state.theme.darkMode);
     const totalProducts = useSelector((state)=>state?.cart?.totalProducts)
     let totalPrice = useSelector((state)=>state.cart.totalPrice)
-    const user = useSelector((state)=>state?.user?.user?.id) ;
+    const userObj = useSelector((state) => state?.user?.user);
+    const user = userObj?.id || userObj?._id;
     const navigate = useNavigate() ;
     const dispatch = useDispatch() ;
     const {fetchAllCartItems} = useAllCartItems()
@@ -57,11 +58,11 @@ const CheckOut = () => {
    }
 
     const orderItems = cart?.map((item) => ({
-      product: item?.product._id,               
-      name: item?.product.name,
-      quantity: item?.quantity,
-      price: item?.product?.price,
-      image: item?.product?.images[0]             
+    product: item?.product?._id || item?.product,
+    name: item?.product?.name || 'Product',
+    quantity: item?.quantity || 1,
+    price: item?.product?.price || 0,
+    image: item?.product?.images?.[0] || 'https://via.placeholder.com/150'
   }));
 
   const clearAllCartItems = async (userId) => {
@@ -81,6 +82,11 @@ const CheckOut = () => {
     
 
   const onSubmit = async (data)=>{
+    if (!user) {
+      toast.error('Please login to complete your order');
+      navigate('/sign-in');
+      return;
+    }
     
     const {
 

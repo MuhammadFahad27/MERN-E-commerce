@@ -54,7 +54,7 @@ const createOrder = catchAsyncErrors(async (req, res, next) => {
             name: dbProduct.name,
             price: dbProduct.price,
             quantity: requestedQuantity,
-            image: dbProduct.images?.[0] || item.image || ''
+            image: dbProduct.images?.[0] || item.image || 'https://via.placeholder.com/150'
         });
     }
 
