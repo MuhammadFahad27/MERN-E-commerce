@@ -15,7 +15,8 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
   'http://localhost:5173',
   'http://127.0.0.1:5173',
-  'https://mern-e-commerce-2sxf.vercel.app'
+  'https://mern-e-commerce-2sxf.vercel.app',
+  'https://mern-e-commerce-five-beryl.vercel.app'
 ].filter(Boolean);
 
 app.use(cors({
@@ -23,7 +24,7 @@ app.use(cors({
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(null, true); // Permissive for local development
+      callback(null, true); // Permissive for development
     }
   },
   credentials: true
@@ -33,36 +34,53 @@ app.get('/api/v1/health', (req, res) => {
   res.status(200).json({ status: 'OK', uptime: process.uptime() });
 });
 
-mongoose.connect(process.env.MONGO_DB_URL, {
-  connectTimeoutMS: 30000,
-  socketTimeoutMS: 45000,
-})
-.then(() => {
-  console.log("✅ MongoDB Connected");
+// Import Routes
+const productRoutes = require('./Routes/product.route');
+const categoryRoutes = require('./Routes/category.route');
+const authRoutes = require('./Routes/auth.route');
+const userRoutes = require('./Routes/user.route');
+const orderRoutes = require('./Routes/order.route');
+const adminRoutes = require('./Routes/admin.route');
+const cartRoutes = require('./Routes/cart.route');
 
-  const productRoutes = require('./Routes/product.route');
-  const categoryRoutes = require('./Routes/category.route');
-  const authRoutes = require('./Routes/auth.route');
-  const userRoutes = require('./Routes/user.route');
-  const orderRoutes = require('./Routes/order.route');
-  const adminRoutes = require('./Routes/admin.route');
-  const cartRoutes = require('./Routes/cart.route');
+// Register Routes
+app.use('/api/v1', productRoutes);
+app.use('/api/v1', categoryRoutes);
+app.use('/api/v1', authRoutes);
+app.use('/api/v1', orderRoutes);
+app.use('/api/v1', userRoutes);
+app.use('/api/v1', adminRoutes);
+app.use('/api/v1', cartRoutes);
 
-  app.use('/api/v1', productRoutes);
-  app.use('/api/v1', categoryRoutes);
-  app.use('/api/v1', authRoutes);
-  app.use('/api/v1', orderRoutes);
-  app.use('/api/v1', userRoutes);
-  app.use('/api/v1', adminRoutes);
-  app.use('/api/v1', cartRoutes);
+// Error Handling Middleware
+app.use(HandleError);
 
-  app.use(HandleError);
+// Database Connection
+let isConnected = false;
+const connectDB = async () => {
+  if (isConnected || mongoose.connection.readyState === 1) {
+    isConnected = true;
+    return;
+  }
+  try {
+    await mongoose.connect(process.env.MONGO_DB_URL, {
+      connectTimeoutMS: 30000,
+      socketTimeoutMS: 45000,
+    });
+    isConnected = true;
+    console.log("✅ MongoDB Connected");
+  } catch (err) {
+    console.error("MongoDB Connection Error:", err);
+  }
+};
 
-  const PORT = process.env.PORT || 3000;
+connectDB();
+
+const PORT = process.env.PORT || 3000;
+if (!process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
-})
-.catch(err => {
-  console.error("MongoDB Connection Error:", err);
-});
+}
+
+module.exports = app;
