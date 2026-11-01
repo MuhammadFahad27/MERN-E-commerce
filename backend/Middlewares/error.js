@@ -1,19 +1,35 @@
-const ErrorHandler = require('../Utils/handleError') ;
+const HandleError = (err, req, res, next) => {
+    let statusCode = err.statusCode || 500;
+    let message = err.message || 'Internal Server Error';
 
-const HandleError = (err,req,res,next)=>{
+    // Mongoose Cast Error (Invalid ObjectId)
+    if (err.name === 'CastError') {
+        message = `Resource not found. Invalid ID: ${err.value}`;
+        statusCode = 404;
+    }
 
-    err.statusCode = err.statusCode || 500 
-    err.message = err.message || 'Internal Server Error'
+    // Mongoose Duplicate Key Error (e.g. unique email/username)
+    if (err.code === 11000) {
+        const field = Object.keys(err.keyValue || {})[0] || 'Field';
+        message = `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`;
+        statusCode = 400;
+    }
 
-   
-    res.status(err.statusCode).json({
+    // JWT Errors
+    if (err.name === 'JsonWebTokenError') {
+        message = 'Invalid authentication token. Please log in again.';
+        statusCode = 401;
+    }
+    if (err.name === 'TokenExpiredError') {
+        message = 'Session expired. Please log in again.';
+        statusCode = 401;
+    }
 
-        success:false ,
-        message:err.message
-    })
+    res.status(statusCode).json({
+        success: false,
+        message,
+        ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    });
+};
 
-
-
-}
-
-module.exports = {HandleError}
+module.exports = { HandleError };

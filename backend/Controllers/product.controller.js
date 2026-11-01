@@ -36,8 +36,8 @@ const createProduct = catchAsyncError(async(req,res,next)=>{
 
      
    
-        if (!req.files || req.files.length !== 4) {
-        return next(new ErrorHandler("Upload at 4 image", 400));
+        if (!req.files || req.files.length === 0) {
+        return next(new ErrorHandler("Please upload at least 1 image", 400));
         }
 
 
@@ -54,7 +54,7 @@ const createProduct = catchAsyncError(async(req,res,next)=>{
 
         name , 
         price :Number(price), 
-        stock :Number(price),
+        stock :Number(stock),
         description ,
         category,
         images , 
@@ -75,10 +75,10 @@ const getAllProducts = catchAsyncError(async(req,res,next)=>{
 
     const allProducts = await Product.find().populate('user','username email').populate('category','name') ;
 
-      return res.status(201).json({
+      return res.status(200).json({
 
         success:true ,
-        message:'Product Found Successfully ',
+        message:'Products Found Successfully ',
         allProducts
     })
 

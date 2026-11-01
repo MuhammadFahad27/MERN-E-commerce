@@ -1,178 +1,164 @@
 const catchAsyncErrors = require("../Middlewares/catchAsyncErrors");
 const Order = require("../Models/order.model");
 const ErrorHandler = require("../Utils/handleError");
-const Product = require('../Models/product.model')
+const Product = require('../Models/product.model');
 
-const createOrder = catchAsyncErrors(async(req,res,next)=>{
-
-       const {
-
-        name , 
-        country ,
+const createOrder = catchAsyncErrors(async (req, res, next) => {
+    const {
+        name,
+        country,
         address,
-        phone ,
-        city ,
-        user ,
-        orderItems ,
-        totalPrice,
-        totalProducts,
+        phone,
+        city,
+        orderItems,
         paymentMethod,
         shippingMethod
+    } = req.body;
 
+    const userId = req.user?.id || req.body.user;
 
-       } = req.body 
-
-        const order = await Order.create({
-
-            name ,
-            country ,
-            address ,
-            phone ,
-            city ,
-            user,
-            totalPrice ,
-            totalProducts,
-            orderItems,
-            shippingMethod,
-            paymentMethod
-
-        })
-
-        return res.status(201).json({
-
-            success:true , 
-            message:'Order created Successfully ',
-            order 
-        })
-
-
-})
-
-//  --- for user 
-const getSingleOrder = catchAsyncErrors(async (req,res,next)=>{
-
-    if(!req.param.id){
-
-        return next(new ErrorHandler('Select order ',400))
-
+    if (!orderItems || !Array.isArray(orderItems) || orderItems.length === 0) {
+        return next(new ErrorHandler('Order must contain at least one item', 400));
     }
 
-    const  order = await Order.findbyId(req.params.id).populate('user','username email') ;
-
-    if(!order){
-
-        return next(new ErrorHandler('order not found',404))
+    if (!name || !address || !phone || !city) {
+        return next(new ErrorHandler('Shipping details (name, address, phone, city) are required', 400));
     }
 
-    return res.status(200).json({
+    // Server-side verification of products and recalculation of total price to prevent price tampering
+    let calculatedTotalPrice = 0;
+    let validatedOrderItems = [];
 
-        success:true , 
-        message:'Order found ',
-        order
-    })
-})
-// for user
-const getAllOrders = catchAsyncErrors(async (req,res,next)=>{
+    for (const item of orderItems) {
+        const productId = item.product?._id || item.product || item._id;
+        const requestedQuantity = Number(item.quantity) || 1;
 
-   
-
-    const  order = await Order.find({user:req.user.id}) ;
-
-
-    return res.status(200).json({
-
-        success:true , 
-        message:'All Order  ',
-        order
-    })
-})
-
-const Orders = catchAsyncErrors(async(req,res,next)=>{
-
-    if(req.user.role !== 'admin'){
-
-        return next(new ErrorHandler(403,'Un-Otherized'))
-    }
-
-    const Orders = await Order.find() ;
-
-    return res.status(200).json({
-
-        success:true ,
-        Orders 
-    })
-})
-
-const updateStatus = catchAsyncErrors(async(req,res,next)=>{
-
-    if(req.user.role !== 'admin'){
-
-        return next(new ErrorHandler('Un-Otherized',403))
-    }
-
-    const {id} = req.params ;
-    const {orderStatus} = req.body ;
-
-    if(!id){
-
-        return next(new ErrorHandler('Bad Request',400))
-    }
-
-    const order = await Order.findByIdAndUpdate(id,{
-        orderStatus
-
-    },{new:true }) ;
-
-    if(!order){
-
-        return res.status(404).json({
-
-            success:false ,
-            message:"Order not found"
-        })
-    }
-
-    // store ids of products 
-     const orderItems = order?.orderItems.map((item) => (
-        { product: item?.product ,
-            quantity : item?.quantity
+        const dbProduct = await Product.findById(productId);
+        if (!dbProduct) {
+            return next(new ErrorHandler(`Product not found: ${productId}`, 404));
         }
-    ));
 
-//     [
-//   { product: new ObjectId('6830a35d2155c38f4336c309'), quantity: 1 },
-//   { product: new ObjectId('6830a4742155c38f4336c30b'), quantity: 1 }
-//     ]   
+        if (dbProduct.stock < requestedQuantity) {
+            return next(new ErrorHandler(`Insufficient stock for "${dbProduct.name}". Only ${dbProduct.stock} remaining.`, 400));
+        }
 
-      if(order.orderStatus==='delivered'){
+        // Deduct inventory stock
+        dbProduct.stock -= requestedQuantity;
+        await dbProduct.save({ validateBeforeSave: false });
 
-            await Promise.all( orderItems.map(async(p)=>{
-                
-                const product = await Product.findById(p.product) ;
+        const itemTotal = dbProduct.price * requestedQuantity;
+        calculatedTotalPrice += itemTotal;
 
-                if(!product){
+        validatedOrderItems.push({
+            product: dbProduct._id,
+            name: dbProduct.name,
+            price: dbProduct.price,
+            quantity: requestedQuantity,
+            image: dbProduct.images?.[0] || item.image || ''
+        });
+    }
 
-                    return next(new ErrorHandler('Product not found',404)) ;
-                }
+    const order = await Order.create({
+        name,
+        country: country || 'Default',
+        address,
+        phone,
+        city,
+        user: userId,
+        totalPrice: calculatedTotalPrice,
+        totalProducts: validatedOrderItems.reduce((acc, i) => acc + i.quantity, 0),
+        orderItems: validatedOrderItems,
+        shippingMethod: shippingMethod || 'Standard',
+        paymentMethod: paymentMethod || 'Cash On Delivery',
+        orderStatus: 'processing'
+    });
 
-                product.stock -= p.quantity ;
-                
-                await product.save() ;
+    return res.status(201).json({
+        success: true,
+        message: 'Order placed successfully',
+        order
+    });
+});
 
-            })
+// For customer: get single order details
+const getSingleOrder = catchAsyncErrors(async (req, res, next) => {
+    const orderId = req.params.id;
 
-        )
+    if (!orderId) {
+        return next(new ErrorHandler('Order ID is required', 400));
+    }
 
-      }
+    const order = await Order.findById(orderId).populate('user', 'username email');
 
-      console.log( orderItems)
+    if (!order) {
+        return next(new ErrorHandler('Order not found', 404));
+    }
+
+    // Ensure non-admins only see their own orders
+    if (req.user.role !== 'admin' && order.user?._id?.toString() !== req.user.id?.toString()) {
+        return next(new ErrorHandler('Unauthorized access to this order', 403));
+    }
 
     return res.status(200).json({
+        success: true,
+        message: 'Order found',
+        order
+    });
+});
 
-        success:true ,
-        message:"Status updated Successfully !"
-    })
-})
+// For customer: get all their orders
+const getAllOrders = catchAsyncErrors(async (req, res, next) => {
+    const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 });
 
+    return res.status(200).json({
+        success: true,
+        message: 'All Orders',
+        order: orders
+    });
+});
 
-module.exports = {createOrder , getSingleOrder , getAllOrders,Orders , updateStatus}
+// For admin: get all platform orders
+const Orders = catchAsyncErrors(async (req, res, next) => {
+    if (req.user.role !== 'admin') {
+        return next(new ErrorHandler('Unauthorized: Admin access required', 403));
+    }
+
+    const orders = await Order.find().populate('user', 'username email').sort({ createdAt: -1 });
+
+    return res.status(200).json({
+        success: true,
+        Orders: orders
+    });
+});
+
+// For admin: update order status
+const updateStatus = catchAsyncErrors(async (req, res, next) => {
+    if (req.user.role !== 'admin') {
+        return next(new ErrorHandler('Unauthorized: Admin access required', 403));
+    }
+
+    const { id } = req.params;
+    const { orderStatus } = req.body;
+
+    if (!id || !orderStatus) {
+        return next(new ErrorHandler('Order ID and status are required', 400));
+    }
+
+    const order = await Order.findByIdAndUpdate(
+        id,
+        { orderStatus },
+        { new: true, runValidators: true }
+    );
+
+    if (!order) {
+        return next(new ErrorHandler('Order not found', 404));
+    }
+
+    return res.status(200).json({
+        success: true,
+        message: 'Order status updated successfully',
+        order
+    });
+});
+
+module.exports = { createOrder, getSingleOrder, getAllOrders, Orders, updateStatus };

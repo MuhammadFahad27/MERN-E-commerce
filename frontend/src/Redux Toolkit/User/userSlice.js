@@ -1,62 +1,46 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-    
-    user:[] ,
-    isLoggedIn : false ,
-    loading : false ,
-    
-    
-}
+  user: null,
+  isLoggedIn: false,
+  isAuthenticated: false,
+  loading: false,
+};
 
 export const userSlice = createSlice({
   name: 'user',
   initialState,
-    reducers:{
+  reducers: {
+    signInStart: (state) => {
+      state.loading = true;
+    },
+    signInSuccess: (state, action) => {
+      state.loading = false;
+      state.user = action.payload;
+      state.isLoggedIn = true;
+      state.isAuthenticated = true;
+    },
+    signInEnd: (state) => {
+      state.loading = false;
+    },
+    signOut: (state) => {
+      state.user = null;
+      state.isLoggedIn = false;
+      state.isAuthenticated = false;
+      state.loading = false;
+    },
+    updateProfile: (state, action) => {
+      state.user = action.payload;
+    },
+  },
+});
 
-        signInStart : (state )=>{
+export const {
+  signInStart,
+  signInSuccess,
+  signInEnd,
+  signOut,
+  updateProfile,
+} = userSlice.actions;
 
-            state.loading = true 
-
-        },
-        signInSuccess : (state , action)=>{
-
-            state.loading = true ;
-            state.user = action.payload  
-            state.isLoggedIn = true 
-            state.isAuthenticated = true 
-
-        },
-         signInEnd : (state )=>{
-
-            state.loading = false
-
-        },
-         signOut : (state )=>{
-
-            
-            state.user = []
-            state.isLoggedIn = false 
-            state.loading = false 
-            state.isAuthenticated = false 
-
-        },
-        updateProfile : (state,action)=>{
-
-            state.user = action.payload 
-        },
-      
-       
-
-
-       
-
-        
-    }
-})
-
-export const { signInStart ,signInSuccess ,signInEnd ,signOut , updateProfile ,
-    
- } = userSlice.actions
-
-export default userSlice.reducer
+export default userSlice.reducer;

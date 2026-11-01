@@ -1,163 +1,149 @@
 const catchAsyncErrors = require("../Middlewares/catchAsyncErrors");
 const User = require("../Models/user.model");
 const ErrorHandler = require("../Utils/handleError");
-const jwt = require('jsonwebtoken') ;
-const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
-const signUp = catchAsyncErrors(async (req,res,next)=>{
+const getCookieOptions = () => {
+    const isProduction = process.env.NODE_ENV === 'production';
+    return {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
+        path: '/',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    };
+};
 
-    const {username , email, password } = req.body 
+const signUp = catchAsyncErrors(async (req, res, next) => {
+    const { username, email, password } = req.body;
 
-    if(!username || !email || !password || email=='' || password == ''){
-
-        return next(ErrorHandler('All Fields are required ',400))
+    if (!username || !email || !password || !email.trim() || !password.trim()) {
+        return next(new ErrorHandler('All fields are required', 400));
     }
 
-    if(password.length < 5 ){
-
-        return next(new ErrorHandler('Password have atleast 5 characters'))
-    }
-    if(password.length > 15 ){
-
-        return next(new ErrorHandler('Password is too long  5-15'))
+    if (password.length < 6) {
+        return next(new ErrorHandler('Password must have at least 6 characters', 400));
     }
 
-    const hashedPassword = await bcrypt.hash(password,10) ;
+    const normalizedEmail = email.trim().toLowerCase();
+    const existingUser = await User.findOne({
+        $or: [{ email: normalizedEmail }, { username: username.trim() }]
+    });
 
-    const isCreated = await User.findOne({email}) ;
-
-    if(isCreated){
-
-        return next(new ErrorHandler('Username already taken ',400))
+    if (existingUser) {
+        if (existingUser.email === normalizedEmail) {
+            return next(new ErrorHandler('Email is already registered', 400));
+        }
+        return next(new ErrorHandler('Username is already taken', 400));
     }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
-        username ,
-        email ,
-        password:hashedPassword 
-    })
+        username: username.trim(),
+        email: normalizedEmail,
+        password: hashedPassword
+    });
 
     return res.status(201).json({
+        success: true,
+        message: "Sign up successful! Please sign in."
+    });
+});
 
-        success:true ,
-        message:"Sign up Successfully "
-    })
+const signIn = catchAsyncErrors(async (req, res, next) => {
+    const { email, password } = req.body;
 
-})
-
-const signIn = catchAsyncErrors(async (req,res,next)=>{
-
-    const {email , password } = req.body ;
-
-     if(!email || !password || email==='' || password === ''){
-
-        return next(new ErrorHandler('All Fields are required ',400))
+    if (!email || !password || !email.trim() || !password.trim()) {
+        return next(new ErrorHandler('Please provide email and password', 400));
     }
 
-    const ValidUser = await User.findOne({email}).select('+password') ;
+    const normalizedEmail = email.trim().toLowerCase();
+    const validUser = await User.findOne({ email: normalizedEmail }).select('+password');
 
-    if(!ValidUser){
-
-        return next(new ErrorHandler('User not found ',404))
+    if (!validUser) {
+        return next(new ErrorHandler('Invalid email or password', 401));
     }
 
-    const user = await bcrypt.compare(password,ValidUser.password) ;
-
-    if(!user){
-
-        return next(new ErrorHandler('Invalid Credentails',400))
+    const isMatch = await bcrypt.compare(password, validUser.password);
+    if (!isMatch) {
+        return next(new ErrorHandler('Invalid email or password', 401));
     }
 
-    // now JWT Token 
+    const token = jwt.sign(
+        {
+            id: validUser._id,
+            role: validUser.role || 'user',
+            name: validUser.username,
+            email: validUser.email
+        },
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: '7d' }
+    );
 
-    const token = jwt.sign({
+    const cookieOptions = getCookieOptions();
 
-        id:ValidUser._id ,
-        role:ValidUser.role ,
-        name:ValidUser.username
-    },process.env.JWT_SECRET_KEY,{expiresIn:'1h'}) ;
-
-
-    return res.cookie('token',token,{
-
-        httpOnly:true,
-        secure:process.env.NODE_ENV == "production",
-        sameSite:process.env.NODE_ENV == "production" ? 'none':'strict' ,
-        path:'/',
-        maxAge: 3600000 ,
-
-
-    }).status(200).json({
-
-        success:true ,
-        message:'Sign in Successfully ',
+    return res.cookie('token', token, cookieOptions).status(200).json({
+        success: true,
+        message: 'Signed in successfully',
         user: {
+            id: validUser._id,
+            role: validUser.role || 'user',
+            name: validUser.username,
+            email: validUser.email
+        },
+        token
+    });
+});
 
-             id:ValidUser._id ,
-            role:ValidUser.role ,
-            name:ValidUser.username,
-            email:ValidUser.email
-        } ,
-        token 
-    })
-
-
-
-})
-
-const signOut = catchAsyncErrors(async (req,res,next)=>{
-
-    const token = req.cookies.token ;
-
-    
-
-    if(!token){
-
-        return next(new ErrorHandler('Login before sign out ',400))
-    } 
-
-    return res.clearCookie('token').status(200).json({
-
-        success:true , 
-        message:'Sign out successfully '
-    })
-})
-
-const checkAuth = catchAsyncErrors(async (req,res,next)=>{
-
-    const token = req.cookies.token ;
-
-    console.log('token',token)
-
-    if(!token){
-
-        return res.json({
-
-            success:false , 
-            
-        })
-    } 
-
-    // check expiry 
-
-    const isValid = await jwt.verify(token,process.env.JWT_SECRET_KEY) ;
-
-    if(!isValid){
-
-        return res.json({
-
-            success:false ,
-            message:'not authenticated'
-        })
-    }
+const signOut = catchAsyncErrors(async (req, res, next) => {
+    const cookieOptions = getCookieOptions();
+    res.clearCookie('token', cookieOptions);
 
     return res.status(200).json({
+        success: true,
+        message: 'Signed out successfully'
+    });
+});
 
-        success:true ,
-        message:'Authenticated ! '
-    })
+const checkAuth = catchAsyncErrors(async (req, res, next) => {
+    const token = req.cookies.token;
 
+    if (!token) {
+        return res.status(200).json({
+            success: false,
+            message: 'Not authenticated'
+        });
+    }
 
-})
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        const user = await User.findById(decoded.id).select('-password');
 
-module.exports = {signUp , signIn , signOut , checkAuth}
+        if (!user) {
+            return res.status(200).json({
+                success: false,
+                message: 'User no longer exists'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Authenticated',
+            user: {
+                id: user._id,
+                name: user.username,
+                email: user.email,
+                role: user.role || 'user'
+            }
+        });
+    } catch (err) {
+        return res.status(200).json({
+            success: false,
+            message: 'Token expired or invalid'
+        });
+    }
+});
+
+module.exports = { signUp, signIn, signOut, checkAuth };

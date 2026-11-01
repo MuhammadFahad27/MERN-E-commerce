@@ -1,13 +1,18 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
-import { Outlet } from 'react-router-dom';
-import SignIn from '../Pages/SignIn';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 function UserRoute() {
+  const { isLoggedIn, user } = useSelector((state) => state.user);
+  const location = useLocation();
 
-    const user = useSelector((state)=>state?.user?.user) ;
-    
-    return user.role === 'user' ? <Outlet/> : <SignIn/>
+  // If user is authenticated
+  if (isLoggedIn || user?.id) {
+    return <Outlet />;
+  }
+
+  // Save the attempted location for redirect after sign in
+  return <Navigate to="/sign-in" state={{ from: location }} replace />;
 }
 
-export default UserRoute
+export default UserRoute;
