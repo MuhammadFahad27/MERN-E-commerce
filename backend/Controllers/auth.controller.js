@@ -71,9 +71,12 @@ const signIn = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler('Invalid email or password', 401));
     }
 
+    const userIdStr = validUser._id.toString();
+
     const token = jwt.sign(
         {
-            id: validUser._id,
+            id: userIdStr,
+            _id: userIdStr,
             role: validUser.role || 'user',
             name: validUser.username,
             email: validUser.email
@@ -88,7 +91,8 @@ const signIn = catchAsyncErrors(async (req, res, next) => {
         success: true,
         message: 'Signed in successfully',
         user: {
-            id: validUser._id,
+            id: userIdStr,
+            _id: userIdStr,
             role: validUser.role || 'user',
             name: validUser.username,
             email: validUser.email
@@ -108,7 +112,11 @@ const signOut = catchAsyncErrors(async (req, res, next) => {
 });
 
 const checkAuth = catchAsyncErrors(async (req, res, next) => {
-    const token = req.cookies.token;
+    let token = req.cookies?.token;
+
+    if (!token && req.headers?.authorization?.startsWith('Bearer ')) {
+        token = req.headers.authorization.split(' ')[1];
+    }
 
     if (!token) {
         return res.status(200).json({
@@ -119,7 +127,7 @@ const checkAuth = catchAsyncErrors(async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        const user = await User.findById(decoded.id).select('-password');
+        const user = await User.findById(decoded.id || decoded._id).select('-password');
 
         if (!user) {
             return res.status(200).json({
@@ -128,15 +136,19 @@ const checkAuth = catchAsyncErrors(async (req, res, next) => {
             });
         }
 
+        const userIdStr = user._id.toString();
+
         return res.status(200).json({
             success: true,
             message: 'Authenticated',
             user: {
-                id: user._id,
+                id: userIdStr,
+                _id: userIdStr,
                 name: user.username,
                 email: user.email,
                 role: user.role || 'user'
-            }
+            },
+            token
         });
     } catch (err) {
         return res.status(200).json({

@@ -60,9 +60,13 @@ const App = () => {
   useEffect(() => {
     const checkAuthSession = async () => {
       try {
+        const token = localStorage.getItem('token');
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1'}/auth/verification`,
-          { withCredentials: true }
+          {
+            withCredentials: true,
+            headers: token ? { Authorization: `Bearer ${token}` } : {}
+          }
         );
 
         if (response.data?.success && response.data?.user) {

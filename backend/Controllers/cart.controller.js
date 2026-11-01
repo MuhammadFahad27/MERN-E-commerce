@@ -3,7 +3,7 @@ const Cart = require("../Models/cart.model");
 const ErrorHandler = require("../Utils/handleError");
 
 const addToCart = catchAsyncErrors(async (req, res, next) => {
-    const effectiveUserId = req.user.id;
+    const effectiveUserId = (req.user?.id || req.user?._id || '').toString();
     const { id } = req.params;
     let message = 'Added to Cart';
 
@@ -50,7 +50,7 @@ const addToCart = catchAsyncErrors(async (req, res, next) => {
 });
 
 const removeFromCart = catchAsyncErrors(async (req, res, next) => {
-    const effectiveUserId = req.user.id;
+    const effectiveUserId = (req.user?.id || req.user?._id || '').toString();
     const { id } = req.params;
 
     if (!id) {
@@ -102,7 +102,7 @@ const removeFromCart = catchAsyncErrors(async (req, res, next) => {
 });
 
 const cartItems = catchAsyncErrors(async (req, res, next) => {
-    const effectiveUserId = req.user.id;
+    const effectiveUserId = (req.user?.id || req.user?._id || '').toString();
     const item = await Cart.find({ user: effectiveUserId }).populate('products.product');
 
     return res.status(200).json({
@@ -113,7 +113,7 @@ const cartItems = catchAsyncErrors(async (req, res, next) => {
 });
 
 const removeProduct = catchAsyncErrors(async (req, res, next) => {
-    const effectiveUserId = req.user.id;
+    const effectiveUserId = (req.user?.id || req.user?._id || '').toString();
     const { id } = req.params;
 
     if (!id) {
@@ -152,7 +152,7 @@ const removeProduct = catchAsyncErrors(async (req, res, next) => {
 });
 
 const deleteCart = catchAsyncErrors(async (req, res, next) => {
-    const effectiveUserId = req.user.id;
+    const effectiveUserId = (req.user?.id || req.user?._id || '').toString();
     await Cart.deleteOne({ user: effectiveUserId });
 
     return res.status(200).json({

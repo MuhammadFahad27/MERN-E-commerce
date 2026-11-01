@@ -43,6 +43,9 @@ const SignIn = () => {
       const result = response.data;
 
       if (result.success) {
+        if (result.token) {
+          localStorage.setItem('token', result.token);
+        }
         dispatch(signInSuccess(result.user));
         toast.success(result.message || 'Welcome back!');
 

@@ -1,40 +1,29 @@
-const jwt  = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const ErrorHandler = require("../Utils/handleError");
-const catchAsyncErrors = require("./catchAsyncErrors");
 
-
-//  to check the use is authenticated or not 
-const verifyUser = async(req,res,next)=>{
-
+const verifyUser = async (req, res, next) => {
     try {
+        let token = req.cookies?.token;
 
-         const token = req.cookies.token ;
-
-        
-
-        if(!token){
-
-            return next(new ErrorHandler('Plz login ',401))
+        // Support Bearer token from Authorization header (solves cross-port cookie blocking)
+        if (!token && req.headers?.authorization?.startsWith('Bearer ')) {
+            token = req.headers.authorization.split(' ')[1];
         }
 
-        
-    // token is available 
+        if (!token && req.headers?.['x-auth-token']) {
+            token = req.headers['x-auth-token'];
+        }
 
-    const decode = await jwt.verify(token,process.env.JWT_SECRET_KEY) ;
+        if (!token) {
+            return next(new ErrorHandler('Please login to continue', 401));
+        }
 
-    req.user = decode 
-
-    next() ;
-        
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        req.user = decoded;
+        next();
     } catch (error) {
-        
-        next(new ErrorHandler('Plz again Login ',401))
+        return next(new ErrorHandler('Session expired or invalid. Please login again.', 401));
     }
+};
 
-   
-
-
-
-}
-
-module.exports = verifyUser
+module.exports = verifyUser;

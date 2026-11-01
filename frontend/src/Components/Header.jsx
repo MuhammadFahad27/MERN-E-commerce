@@ -32,6 +32,7 @@ const Header = () => {
 
   const handleLogOut = async () => {
     try {
+      localStorage.removeItem('token');
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1'}/auth/sign-out`,
         {},

@@ -1,42 +1,34 @@
 import axios from "axios";
-import {useDispatch,useSelector} from 'react-redux'
+import { useDispatch } from 'react-redux';
 import { endFetchAllItems, fetchAllItems, startFetchAllItems } from "../Redux Toolkit/Cart/cartSlice";
-import {toast} from 'sonner'
 
-export const useAllCartItems = ()=>{
+export const useAllCartItems = () => {
+    const dispatch = useDispatch();
 
-    // const userId = useSelector((state)=>state?.user?.user?.id) ;
-    const dispatch = useDispatch () ;
-
-     const fetchAllCartItems = async (userId)=>{
-
-        if(!userId){
-
-            toast.error('id is required')
-            return ;
+    const fetchAllCartItems = async (userId) => {
+        if (!userId) {
+            return;
         }
 
-            try {
-
-                  dispatch(startFetchAllItems()) ;
-                const response = await axios.get(import.meta.env.VITE_API_URL+`/all-cart-items/${userId}`,{
-
-                    withCredentials:true
-                })
-                if(response.data?.success){
-
-                    dispatch(fetchAllItems(response.data))
-                    
-                    return ;
+        try {
+            dispatch(startFetchAllItems());
+            const token = localStorage.getItem('token');
+            const response = await axios.get(
+                `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1'}/all-cart-items/${userId}`,
+                {
+                    withCredentials: true,
+                    headers: token ? { Authorization: `Bearer ${token}` } : {}
                 }
-                
-            } catch (error) {
-                
-                console.log(error?.response?.data?.message)
-                dispatch(endFetchAllItems()) ;
+            );
+
+            if (response.data?.success) {
+                dispatch(fetchAllItems(response.data));
             }
-
+        } catch (error) {
+            dispatch(endFetchAllItems());
+            console.error('Fetch cart error:', error?.response?.data?.message);
         }
+    };
 
-    return {fetchAllCartItems} ;
-}
+    return { fetchAllCartItems };
+};
