@@ -1,0 +1,53 @@
+name: Security Scan - Detect Malicious Scripts
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  malware-scan:
+    runs-on: ubuntu-latest
+    name: Scan for malicious dropper patterns
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for suspicious files
+        run: |
+          echo "=== Checking for suspicious dropper files ==="
+          FOUND=0
+          for f in init init.js post.config post.config.js setup.js dropper.js; do
+            if [ -f "$f" ]; then
+              echo "ALERT: Suspicious file found: $f"
+              FOUND=1
+            fi
+          done
+          if [ $FOUND -eq 1 ]; then
+            echo "FAIL: Malicious dropper file(s) detected! Blocking push."
+            exit 1
+          fi
+          echo "OK: No suspicious files found."
+
+      - name: Check package.json for malicious scripts
+        run: |
+          echo "=== Checking package.json for malicious script patterns ==="
+          FOUND=0
+          find . -name "package.json" -not -path "*/node_modules/*" | while read f; do
+            if grep -qE '"(postinstall|preinstall)"\s*:\s*"node' "$f"; then
+              echo "ALERT: Suspicious postinstall/preinstall in $f"
+              grep -E '"(postinstall|preinstall)"' "$f"
+              FOUND=1
+            fi
+            if grep -qE 'node init' "$f"; then
+              echo "ALERT: 'node init' dropper pattern found in $f"
+              grep 'node init' "$f"
+              FOUND=1
+            fi
+          done
+          if [ $FOUND -eq 1 ]; then
+            echo "FAIL: Malicious patterns detected in package.json. Blocking push."
+            exit 1
+          fi
+          echo "OK: package.json scripts look clean."
